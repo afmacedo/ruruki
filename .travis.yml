@@ -5,8 +5,8 @@ install:
   - pip install tox-travis
 script: tox
 # whitelist branches to build
-branches:
-  - master
+# branches:
+#   - master
 notifications:
   email:
     - jenmud@gmail.com
