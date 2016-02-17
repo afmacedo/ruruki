@@ -9,7 +9,8 @@ script: tox
 #   - master
 notifications:
   email:
-    - jenmud@gmail.com
-    on_success: always
+    recipients:
+      - jenmud@gmail.com
+      - jenmud@optiver.com.au
+    on_success: change
     on_failure: always
-  
