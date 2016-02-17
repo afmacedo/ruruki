@@ -1,1 +1,1 @@
-For documentation, see the docs directory.
+For documentation, see: http://ruruki.readthedocs.org/en/latest/index.html
