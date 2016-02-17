@@ -3,7 +3,9 @@ python:
   - "2.7"
 install:
   - pip install tox-travis
-script: tox
+script:
+  - mkdir docs/_static
+  - tox
 # whitelist branches to build
 # branches:
 #   - master
