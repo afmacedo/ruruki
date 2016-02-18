@@ -4,12 +4,8 @@ engines:
     duplication:
         enabled: true
         config:
-            language: python
-    fixme:
-        enabled: true
-    radon:
-        enabled: true
+            languages:
+            - python
 ratings:
     paths:
         - "**.py"
-exclude_paths: []
