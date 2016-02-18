@@ -1,4 +1,7 @@
 engines:
+    engines:
+        pep8:
+            enabled: true
     duplication:
         enabled: true
         config:
