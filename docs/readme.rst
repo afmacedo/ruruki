@@ -10,7 +10,7 @@ So **ruruki** is a in-memory directed property graph database **tool** used for 
 
 **Ruruki** is super useful for
 
-* Temporary light weight graph database. Sometimes you do not want to depend on a heavy backend that requires complicated software like Java. Or you do not have root or admin access on the server you want to run the database on. With **ruruki**, you can install it in a python virtualenv and be up and running in no time.
+* Temporary lightweight graph database. Sometimes you do not want to depend on a heavy backend that requires complicated software like Java. Or you do not have root or admin access on the server you want to run the database on. With **ruruki**, you can install it in a python virtualenv and be up and running in no time.
 * Proof of concept. **Ruruki** is super great for demonstrating a proof of concept with little resources, effort, and hassle.
 
 My idea behind using a graph database is because everything is connected in some shape or form, no matter what it is. You can apply it to things like
