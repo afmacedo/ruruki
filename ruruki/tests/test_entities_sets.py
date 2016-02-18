@@ -592,7 +592,7 @@ class TestContainsFiltering(FilteringBase):
                 surname__contains="o",
                 age=30,
             ).sorted(),
-            [self.marko, self.john],
+            sorted([self.marko, self.john]),
         )
 
     def test_filter_with_label_not_all_props_match(self):
@@ -642,7 +642,7 @@ class TestContainsFiltering(FilteringBase):
                 surname__icontains="o",
                 age=30,
             ).sorted(),
-            [self.marko, self.john],
+            sorted([self.marko, self.john]),
         )
 
     def test_incase_filter_with_label_not_all_props_match(self):
