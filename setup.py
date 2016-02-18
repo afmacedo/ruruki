@@ -38,8 +38,15 @@ auto_version_setup(
         "Topic :: Database :: Database Engines/Servers",
         "Topic :: Software Development :: Libraries",
     ],
-    keywords="graph db momory database in-memory snail extraction tool",
-    description="Ruruki is a in-memory graph database.",
+    keywords=(
+        "graph db momory database in-memory snail extraction tool "
+        "POC proof concept temporary lightweight"
+    ),
+    description=(
+        "Ruruki is a lightweight in-memory graph database which is ideal "
+        "if you need a temporary graph database, or just doing a proof of "
+        "concept and need a fast and reliable graph database."
+    ),
     long_description=open("README.rst").read(),
     packages=find_packages(),
     package_data={
