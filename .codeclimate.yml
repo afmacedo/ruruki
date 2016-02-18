@@ -1,8 +1,8 @@
 engines:
     pep8:
-        enabled: true
+        enabled: false
     duplication:
-        enabled: true
+        enabled: false
         config:
             languages:
             - python
