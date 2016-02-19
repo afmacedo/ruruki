@@ -1,6 +1,9 @@
 engines:
     radon: 
         enabled: true
+        config: 
+            python_version: 2
+            threshold: "D"
     pep8:
         enabled: false
     duplication:
@@ -14,3 +17,4 @@ ratings:
 exclude_paths:
 - docs/*
 - ruruki/test_utils/*
+- **/tests/**/*
