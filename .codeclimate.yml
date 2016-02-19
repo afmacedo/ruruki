@@ -17,4 +17,4 @@ ratings:
 exclude_paths:
 - docs/*
 - ruruki/test_utils/*
-- **/tests/**/*
+- ruruki/tests/*
