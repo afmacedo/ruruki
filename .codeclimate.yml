@@ -1,4 +1,6 @@
 engines:
+    radon: 
+        enabled: true
     pep8:
         enabled: false
     duplication:
