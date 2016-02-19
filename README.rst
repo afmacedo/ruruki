@@ -3,14 +3,6 @@
 
 .. image:: https://codeclimate.com/github/optiver/ruruki/badges/gpa.svg
    :target: https://codeclimate.com/github/optiver/ruruki
-      :alt: Code Climate
-
-.. image:: https://codeclimate.com/github/optiver/ruruki/badges/coverage.svg
-   :target: https://codeclimate.com/github/optiver/ruruki/coverage
-      :alt: Test Coverage
-
-.. image:: https://codeclimate.com/github/optiver/ruruki/badges/issue_count.svg
-   :target: https://codeclimate.com/github/optiver/ruruki
-      :alt: Issue Count
+   :alt: Code Climate
 
 For documentation, see: http://ruruki.readthedocs.org/en/latest/index.html
