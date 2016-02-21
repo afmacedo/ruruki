@@ -5,4 +5,18 @@
    :target: https://codeclimate.com/github/optiver/ruruki
    :alt: Code Climate
 
-For documentation, see: http://ruruki.readthedocs.org/en/latest/index.html
+=============
+Documentation
+=============
+See ruruki `documentation here <http://ruruki.readthedocs.org/en/latest/index.html>`_.
+
+==================
+Visualization tool
+==================
+See rurukis' visual graph exploration tool called `Ruruki-eye <https://github.com/optiver/ruruki-eye>`_
+
+
+====
+Demo
+====
+Demo `ruruki-eye <https://github.com/optiver/ruruki-eye>`_ server is still under construction.
