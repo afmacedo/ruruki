@@ -66,8 +66,7 @@ Creating a database
 .. code-block:: python
 
     # Ensure that vertices/nodes person, book, author, and category have a
-    # unique name property, and that the language vertex/node has
-    # a unique version property.
+    # unique name property.
     >>> graph.add_vertex_constraint("person", "name")
     >>> graph.add_vertex_constraint("book", "name")
     >>> graph.add_vertex_constraint("author", "name")
