@@ -80,3 +80,11 @@ Functionality still being worked on
 * Extensions, for example interacting with Neo4j.
 * Persistence.
 * Channels for publishing and subscribing.
+
+
+~~~~~~~~~~~~~~~~~
+
+Demo
+----
+
+To see an online demo of `ruruki-eye <https://github.com/jenmud/ruruki-eye>`_ follow the following link http://www.ruruki.com.
