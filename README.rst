@@ -5,6 +5,13 @@
    :target: https://codeclimate.com/github/optiver/ruruki
    :alt: Code Climate
 
+============
+Introduction
+============
+What is Ruruki? Well the `technical meaning <https://en.wiktionary.org/wiki/ruruki>`_ is “any tool used to extract snails from rocks”.
+
+So ruruki is an in-memory directed property graph database.
+
 =============
 Documentation
 =============
@@ -14,7 +21,6 @@ See ruruki `documentation here <http://ruruki.readthedocs.org/en/latest/index.ht
 Visualization tool
 ==================
 See rurukis' visual graph exploration tool called `Ruruki-eye <https://github.com/optiver/ruruki-eye>`_
-
 
 ====
 Demo
