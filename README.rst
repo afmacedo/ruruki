@@ -19,7 +19,7 @@ See rurukis' visual graph exploration tool called `Ruruki-eye <https://github.co
 ====
 Demo
 ====
-To see an online demo on `ruruki-eye <https://github.com/optiver/ruruki-eye>`_ follow the following link http://www.ruruki.com.
+To see an online demo of `ruruki-eye <https://github.com/optiver/ruruki-eye>`_ follow the following link http://www.ruruki.com.
 
 What data does the demo instance have
 =====================================
