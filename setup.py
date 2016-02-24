@@ -47,7 +47,6 @@ auto_version_setup(
         "if you need a temporary graph database, or just doing a proof of "
         "concept and need a fast and reliable graph database."
     ),
-    long_description=open("README.md").read(),
     packages=find_packages(),
     package_data={
         "ruruki": [
