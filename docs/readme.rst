@@ -88,3 +88,40 @@ Demo
 ----
 
 To see an online demo of `ruruki-eye <https://github.com/jenmud/ruruki-eye>`_ follow the following link http://www.ruruki.com.
+
+
+~~~~~~~~~~~~~~~~~
+
+Build and Testing Status
+------------------------
+
+.. image:: https://travis-ci.org/optiver/ruruki.svg?branch=master
+    :target: https://travis-ci.org/optiver/ruruki
+|
+.. image:: https://coveralls.io/repos/github/optiver/ruruki/badge.svg?branch=master
+    :target: https://coveralls.io/github/optiver/ruruki?branch=master
+|
+.. image:: https://codeclimate.com/github/optiver/ruruki/badges/gpa.svg
+    :target: https://codeclimate.com/github/optiver/ruruki
+    :alt: Code Climate
+|
+.. image:: https://img.shields.io/pypi/dm/ruruki.svg
+    :target: https://pypi.python.org/pypi/ruruki
+|
+.. image:: https://img.shields.io/pypi/status/ruruki.svg
+    :target: https://pypi.python.org/pypi/ruruki
+|
+.. image:: https://img.shields.io/pypi/pyversions/ruruki.svg
+    :target: https://pypi.python.org/pypi/ruruki
+|
+.. image:: https://img.shields.io/pypi/dd/ruruki.svg
+    :target: https://pypi.python.org/pypi/ruruki
+|
+.. image:: https://img.shields.io/pypi/dw/ruruki.svg
+    :target: https://pypi.python.org/pypi/ruruki
+|
+.. image:: https://img.shields.io/pypi/dm/ruruki.svg
+    :target: https://pypi.python.org/pypi/ruruki
+
+
+
