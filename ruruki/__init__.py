@@ -7,36 +7,6 @@ from pkg_resources import (  # pylint: disable=no-name-in-module
     load_entry_point,
 )
 
-# id tracking
-_EID = 0
-_VID = 0
-
-
-def generate_edge_id():
-    """
-    Generate a edge id.
-
-    :returns: Edge id number.
-    :rtype: :class:`int`
-    """
-    global _EID  # pylint: disable=global-statement
-    ident = _EID
-    _EID += 1
-    return ident
-
-
-def generate_vertex_id():
-    """
-    Generate a vertex id.
-
-    :returns: Vertex id number.
-    :rtype: :class:`int`
-    """
-    global _VID  # pylint: disable=global-statement
-    ident = _VID
-    _VID += 1
-    return ident
-
 
 def get_graph_plugins():
     """

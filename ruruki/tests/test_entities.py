@@ -7,7 +7,7 @@ import unittest2
 from ruruki.interfaces import IEdge, VertexError, EntityUpdateError
 from ruruki.entities import Entity, Edge, Vertex
 from ruruki.test_utils import base
-from ruruki import create_graph
+from ruruki.graphs import Graph
 
 
 class TestEntityBase(unittest2.TestCase):
@@ -15,8 +15,8 @@ class TestEntityBase(unittest2.TestCase):
         self.marko = Entity(label="person", name="marko", age=29)
 
     def test_is_bound(self):
-        graph = create_graph()
-        graph.bind_to_graph(self.marko)
+        graph = Graph()
+        self.marko.graph = graph  # mock is bound
         self.assertEqual(
             self.marko.is_bound(),
             True
@@ -490,7 +490,7 @@ class TestEdge(base.TestBase, TestEntityBase):
 
     def test_is_bound(self):
         edge = Edge(self.marko, "de-friends", self.josh)
-        graph = create_graph()
+        graph = Graph()
         graph.bind_to_graph(edge)
         self.assertEqual(
             edge.is_bound(),

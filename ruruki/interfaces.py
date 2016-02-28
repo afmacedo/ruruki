@@ -116,10 +116,13 @@ class IGraph(object):
     @abc.abstractmethod
     def bind_to_graph(self, entity):
         """
-        Bind an entity to the graph.
+        Bind an entity to the graph and generate and set a unique id on the
+        entity.
 
         :param entity: Entity that you are binding to the graph.
         :type entity: :class:`~.IEntity`
+        :raises UnknownEntityError: Is raised if the entity is not a instance
+            if a :class:`~.IVertex` or :class:`~.IEdge`.
         """
 
     @abc.abstractmethod
@@ -352,6 +355,16 @@ class IGraph(object):
 class IEntity(object):
     """
     Base interface for a vertex/node and edge/relationship.
+
+    .. note::
+
+        Identity numbers are :obj:`None` by default. They are set
+        by the :meth:`~.IGraph.bind_to_graph` when they are bound to the
+        a graph. If using :class:`~.IEntity` and :class:`~.IEntitySet` without
+        a bound graph, you will need to manually set the `ident` yourself.
+
+        :class:`~.IDGenerator` can help you with assigning id's to vertices
+        and edges.
     """
     __slots__ = []
     __metaclass__ = abc.ABCMeta

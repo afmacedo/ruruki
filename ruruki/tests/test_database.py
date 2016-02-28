@@ -514,7 +514,6 @@ class TestGraph(base.TestBase):
 
     def test_set_property_unknown_type(self):
         some_entity = Entity("SomeEntity")
-        self.graph.bind_to_graph(some_entity)
         self.assertRaises(
             TypeError,
             self.graph.set_property,
@@ -562,6 +561,14 @@ class TestGraph(base.TestBase):
         self.assertIs(
             sue.graph,
             self.graph
+        )
+
+    def test_bind_to_graph_unsupported_type(self):
+        sue = Entity(100, name="Sue")
+        self.assertRaises(
+            interfaces.UnknownEntityError,
+            self.graph.bind_to_graph,
+            sue
         )
 
 
