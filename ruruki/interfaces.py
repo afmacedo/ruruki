@@ -355,6 +355,16 @@ class IGraph(object):
 class IEntity(object):
     """
     Base interface for a vertex/node and edge/relationship.
+
+    .. note::
+
+        Identity numbers are :obj:`None` by default. They are set
+        by the :meth:`~.IGraph.bind_to_graph` when they are bound to the
+        a graph. If using :class:`~.IEntity` and :class:`~.IEntitySet` without
+        a bound graph, you will need to manually set the `ident` yourself.
+
+        :class:`~.IDGenerator` can help you with assigning id's to vertices
+        and edges.
     """
     __slots__ = []
     __metaclass__ = abc.ABCMeta
