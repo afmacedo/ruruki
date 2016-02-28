@@ -514,7 +514,6 @@ class TestGraph(base.TestBase):
 
     def test_set_property_unknown_type(self):
         some_entity = Entity("SomeEntity")
-        self.graph.bind_to_graph(some_entity)
         self.assertRaises(
             TypeError,
             self.graph.set_property,

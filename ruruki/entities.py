@@ -1,7 +1,6 @@
 """
 Entities
 """
-from ruruki import generate_edge_id, generate_vertex_id
 from ruruki import interfaces
 
 
@@ -85,7 +84,6 @@ class Vertex(interfaces.IVertex, Entity):
 
     def __init__(self, label=None, **kwargs):
         super(Vertex, self).__init__(label=label, **kwargs)
-        self.ident = generate_vertex_id()
         self.in_edges = EntitySet()
         self.out_edges = EntitySet()
 
@@ -188,7 +186,6 @@ class Edge(interfaces.IEdge, Entity):
 
     def __init__(self, head, label, tail, **kwargs):
         super(Edge, self).__init__(label=label, **kwargs)
-        self.ident = generate_edge_id()
         self.head = head
         self.tail = tail
 

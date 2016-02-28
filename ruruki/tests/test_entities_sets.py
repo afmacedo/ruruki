@@ -5,6 +5,7 @@
 # pylint: disable=no-member
 
 import unittest2 as unittest
+from ruruki.graphs import IDGenerator
 from ruruki.entities import Vertex, EntitySet, Edge
 from ruruki.test_utils import base
 
@@ -138,6 +139,7 @@ class TestEntitySet(base.TestBase):
 
 class FilteringBase(unittest.TestCase):
     def setUp(self):
+        id_generator = IDGenerator()
         self.marko = Vertex(
             "Father",
             name="Marko",
@@ -156,6 +158,11 @@ class FilteringBase(unittest.TestCase):
             surname="Doe",
             age=20
         )
+
+        # add id's to the unbound vertices
+        self.marko.ident = id_generator.get_vertex_id()
+        self.john.ident = id_generator.get_vertex_id()
+        self.peter.ident = id_generator.get_vertex_id()
         self.container = EntitySet([self.marko, self.john, self.peter])
 
 
@@ -270,6 +277,7 @@ class TestSetOperations(FilteringBase):
         )
 
     def test_union_filter_for_labels_with_no_props(self):
+        id_generator = IDGenerator()
         marko = Vertex(
             "person",
             name="Marko",
@@ -280,6 +288,12 @@ class TestSetOperations(FilteringBase):
         )
         edge = Edge(marko, "father", josh)
         edge2 = Edge(josh, "son", marko)
+
+        # attach ID's to the vertices and edges.
+        marko.ident = id_generator.get_vertex_id()
+        josh.ident = id_generator.get_vertex_id()
+        edge.ident = id_generator.get_edge_id()
+        edge2.ident = id_generator.get_edge_id()
 
         container1 = EntitySet()
         container2 = EntitySet()

@@ -2,9 +2,8 @@
 """
 Base Test setup.
 """
-
 import unittest2
-import ruruki
+from ruruki import graphs
 from ruruki.test_utils import helpers
 
 
@@ -13,14 +12,8 @@ class TestBase(unittest2.TestCase):
     Base test class.
     """
     def setUp(self):
-        # First make sure that you reset the global id counters to 0
-        # This is a bit of a hack
-        ruruki._VID = 0  # pylint: disable=protected-access
-        ruruki._EID = 0  # pylint: disable=protected-access
-
-        self.graph = ruruki.create_graph(
-            data=helpers.get_test_dump_graph_file_handler()
-        )
+        self.graph = graphs.Graph()
+        self.graph.load(helpers.get_test_dump_graph_file_handler())
 
         # See test_utils/small_people_graph.dump
         # get and set each of the vertices and edges for later use.

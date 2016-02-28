@@ -8,6 +8,38 @@ from ruruki.entities import Vertex, Edge
 from ruruki.entities import EntitySet
 
 
+class IDGenerator(object):
+    """
+    ID generator and tracker.
+    """
+
+    def __init__(self):
+        self._VID = 0
+        self._EID = 0
+
+    def get_edge_id(self):
+        """
+        Generate a edge id.
+
+        :returns: Edge id number.
+        :rtype: :class:`int`
+        """
+        ident = self._EID
+        self._EID += 1
+        return ident
+
+    def get_vertex_id(self):
+        """
+        Generate a vertex id.
+
+        :returns: Vertex id number.
+        :rtype: :class:`int`
+        """
+        ident = self._VID
+        self._VID += 1
+        return ident
+
+
 class Graph(interfaces.IGraph):
     """
     Graph database.
@@ -16,7 +48,9 @@ class Graph(interfaces.IGraph):
 
         See :class:`~.IGraph` for doco.
     """
+
     def __init__(self):
+        self._id_tracker = IDGenerator()
         self._vconstraints = defaultdict(dict)
         self._econstraints = defaultdict()
         self.vertices = EntitySet()
@@ -86,6 +120,14 @@ class Graph(interfaces.IGraph):
         return constraints
 
     def bind_to_graph(self, entity):
+        if isinstance(entity, interfaces.IVertex):
+            entity.ident = self._id_tracker.get_vertex_id()
+        elif isinstance(entity, interfaces.IEdge):
+            entity.ident = self._id_tracker.get_edge_id()
+        else:
+            raise interfaces.UnknownEntityError(
+                "Unknown entity {0!r}".format(entity)
+            )
         entity.graph = self
 
     def get_or_create_vertex(self, label=None, **kwargs):
