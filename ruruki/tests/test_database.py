@@ -563,6 +563,14 @@ class TestGraph(base.TestBase):
             self.graph
         )
 
+    def test_bind_to_graph_unsupported_type(self):
+        sue = Entity(100, name="Sue")
+        self.assertRaises(
+            interfaces.UnknownEntityError,
+            self.graph.bind_to_graph,
+            sue
+        )
+
 
 class TestGraphGetOrCreateVertices(base.TestBase):
     def test_add_new(self):

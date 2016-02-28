@@ -14,8 +14,8 @@ class IDGenerator(object):
     """
 
     def __init__(self):
-        self._VID = 0
-        self._EID = 0
+        self.vid = 0
+        self.eid = 0
 
     def get_edge_id(self):
         """
@@ -24,8 +24,8 @@ class IDGenerator(object):
         :returns: Edge id number.
         :rtype: :class:`int`
         """
-        ident = self._EID
-        self._EID += 1
+        ident = self.eid
+        self.eid += 1
         return ident
 
     def get_vertex_id(self):
@@ -35,8 +35,8 @@ class IDGenerator(object):
         :returns: Vertex id number.
         :rtype: :class:`int`
         """
-        ident = self._VID
-        self._VID += 1
+        ident = self.vid
+        self.vid += 1
         return ident
 
 
