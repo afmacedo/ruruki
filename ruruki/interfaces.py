@@ -116,10 +116,13 @@ class IGraph(object):
     @abc.abstractmethod
     def bind_to_graph(self, entity):
         """
-        Bind an entity to the graph.
+        Bind an entity to the graph and generate and set a unique id on the
+        entity.
 
         :param entity: Entity that you are binding to the graph.
         :type entity: :class:`~.IEntity`
+        :raises UnknownEntityError: Is raised if the entity is not a instance
+            if a :class:`~.IVertex` or :class:`~.IEdge`.
         """
 
     @abc.abstractmethod
