@@ -25,7 +25,9 @@ Demo
 ====
 To see an online demo of [ruruki-eye](https://github.com/optiver/ruruki-eye) follow the following link http://www.ruruki.com.
 
-Some interesting data [ruruki package 1 level deep](http://www.ruruki.com/vertices/0?levels=1)
+Some interesting data on the [ruruki package 1 level deep](http://www.ruruki.com/vertices/0?levels=1)
+
+Go nuts and [show me everything](http://www.ruruki.com/vertices/0?levels=100)
 
 What data does the demo instance have
 -------------------------------------
