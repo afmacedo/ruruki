@@ -14,3 +14,36 @@ Graphs
 .. autoclass:: ruruki.graphs.PersistentGraph
    :members:
    :inherited-members:
+
+
+Entities
+========
+
+.. autoclass:: ruruki.entities.EntitySet
+   :members:
+   :inherited-members:
+
+
+.. autoclass:: ruruki.entities.Entity
+   :members:
+   :inherited-members:
+
+
+.. autoclass:: ruruki.entities.Vertex
+   :members:
+   :inherited-members:
+
+
+.. autoclass:: ruruki.entities.PersistentVertex
+   :members:
+   :inherited-members:
+
+
+.. autoclass:: ruruki.entities.Edge
+   :members:
+   :inherited-members:
+
+
+.. autoclass:: ruruki.entities.PersistentEdge
+   :members:
+   :inherited-members:
