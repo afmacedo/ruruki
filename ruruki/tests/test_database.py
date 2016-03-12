@@ -3,11 +3,17 @@
 # pylint: disable=protected-access
 # pylint: disable=too-many-public-methods
 # pylint: disable=too-many-statements
+# pylint: disable=too-many-lines
 
 import json
-from ruruki import create_graph
+import os
+import shutil
+import tempfile
+import unittest2
 from ruruki import interfaces
+from ruruki.graphs import Graph, PersistentGraph
 from ruruki.entities import Entity, Edge, Vertex
+from ruruki.entities import PersistentVertex, PersistentEdge
 from ruruki.test_utils import base, helpers
 
 
@@ -33,7 +39,7 @@ class TestGraph(base.TestBase):
         )
 
     def test_load(self):
-        graph = create_graph()
+        graph = Graph()
         fh = helpers.get_test_dump_graph_file_handler()
         graph.load(fh)
 
@@ -658,7 +664,7 @@ class TestGraphGetOrCreateVertices(base.TestBase):
         )
 
     def test_no_constraints_filter_found_one_vertex(self):
-        graph = create_graph()
+        graph = Graph()
         graph.add_vertex("dog", name="rex")
 
         spot = graph.add_vertex("dog", name="spot")
@@ -739,4 +745,666 @@ class TestGraphGetOrCreateEdges(base.TestBase):
         self.assertEqual(
             self.graph.get_or_create_edge(self.marko, "knows", self.josh),
             self.marko_knows_josh,
+        )
+
+
+def create_graph_mock_path():
+    """
+    Create the folllowing
+
+    path
+       |_ vertices
+       |     |_ constraints.json (file)
+       |     |_ label
+       |     |     |_ 0
+       |     |        |_ properties.json (file)
+       |     |        |_ in-edges
+       |     |        |     |_ 0 -> ../../../../edges/label/0 (symlink)
+       |     |        |_ out-edges
+       |     |              |_
+       |     |
+       |     |_ label
+       |         |_ 1
+       |              |_ properties.json (file)
+       |              |_ in-edges
+       |              |     |_
+       |              |_ out-edges
+       |                    |_ 0 -> ../../../../edges/label/0 (symlink)
+       |
+       |_ edges
+             |_ constraints.json
+             |_ label
+                   |
+                   |_0
+                     |_ properties.json (file)
+                     |_ head
+                     |   |_ ../../../vertices/0 (symlik)
+                     |_ tail
+                         |_ ../../../vertices/1 (symlik)
+    """
+    path = tempfile.mkdtemp()
+    vertices_path = os.path.join(path, "vertices")
+    os.makedirs(vertices_path)
+    edges_path = os.path.join(path, "edges")
+    os.makedirs(edges_path)
+
+    # create constraints
+    open(os.path.join(edges_path, "constraints.json"), "w").close()
+    json.dump(
+        [
+            {
+                "label": "person",
+                "key": "name",
+            }
+        ],
+        open(os.path.join(vertices_path, "constraints.json"), "w"),
+        indent=4,
+    )
+
+    # create two vertices
+    marko_path = os.path.join(vertices_path, "person", "0")
+    marko_in_edges_path = os.path.join(marko_path, "in-edges")
+    marko_out_edges_path = os.path.join(marko_path, "out-edges")
+    os.makedirs(marko_path)
+    os.makedirs(marko_in_edges_path)
+    os.makedirs(marko_out_edges_path)
+    json.dump(
+        {"name": "Marko"},
+        open(os.path.join(marko_path, "properties.json"), "w"),
+        indent=4,
+    )
+
+    josh_path = os.path.join(vertices_path, "person", "1")
+    josh_in_edges_path = os.path.join(josh_path, "in-edges")
+    josh_out_edges_path = os.path.join(josh_path, "out-edges")
+    os.makedirs(josh_path)
+    os.makedirs(josh_in_edges_path)
+    os.makedirs(josh_out_edges_path)
+    json.dump(
+        {"name": "Josh"},
+        open(os.path.join(josh_path, "properties.json"), "w"),
+        indent=4,
+    )
+
+    # create edge between the vertices
+    edge_path = os.path.join(edges_path, "knows", "0")
+    head_path = os.path.join(edge_path, "head")
+    tail_path = os.path.join(edge_path, "tail")
+    os.makedirs(edge_path)
+    os.makedirs(head_path)
+    os.makedirs(tail_path)
+    json.dump(
+        {"since": "school"},
+        open(os.path.join(edge_path, "properties.json"), "w"),
+        indent=4,
+    )
+
+    os.symlink(marko_path, os.path.join(head_path, "0"))
+    os.symlink(josh_path, os.path.join(tail_path, "1"))
+
+    return path
+
+
+class TestPersistentGraph(unittest2.TestCase):
+    def setUp(self):
+        self.graph = PersistentGraph()
+
+    def test_import_from_path(self):
+        path = create_graph_mock_path()
+        graph = PersistentGraph(path)
+
+        # check that the paths are setup correctly
+        self.assertEqual(graph.path, path)
+
+        self.assertEqual(
+            graph.vertices_path,
+            os.path.join(path, "vertices")
+        )
+        self.assertEqual(
+            graph.vertices_constraints_path,
+            os.path.join(path, "vertices", "constraints.json")
+        )
+
+        self.assertEqual(
+            graph.edges_path,
+            os.path.join(path, "edges")
+        )
+
+        # check that the constraints have been imported
+        self.assertEqual(
+            sorted(graph.get_vertex_constraints()),
+            [("person", "name")],
+        )
+
+    def test_import_from_empty_path_with_auto_create(self):
+        path = tempfile.mkdtemp()
+        graph = PersistentGraph(path, auto_create=True)
+
+        # check the top level directories have been created.
+        self.assertEqual(
+            sorted(os.listdir(graph.path)),
+            sorted(["vertices", "edges"]),
+        )
+
+        # check the vertices directory and other files have been created.
+        self.assertEqual(
+            sorted(os.listdir(graph.vertices_path)),
+            sorted(["constraints.json"]),
+        )
+
+    def test_import_from_empty_path_without_auto_create(self):
+        path = tempfile.mkdtemp()
+        self.assertRaises(
+            IOError,
+            PersistentGraph,
+            path,
+            auto_create=False
+        )
+
+    def test_import_from_path_auto_create_has_edges_missing_vertices(self):
+        path = create_graph_mock_path()
+        shutil.rmtree(
+            os.path.join(
+                path,
+                "vertices",
+            )
+        )
+
+        self.assertRaises(
+            OSError,
+            PersistentGraph,
+            path,
+            auto_create=True
+        )
+
+    def test_import_from_path_auto_create_has_no_missing_dirs(self):
+        path = create_graph_mock_path()
+        graph = PersistentGraph(path, auto_create=True)
+        self.assertEqual(len(graph.vertices), 2)
+        self.assertEqual(len(graph.edges), 1)
+
+    def test_import_from_empty_path_data_written_new_empty_path(self):
+        # this is just to check that data is written to the empty
+        # path that was provided and automatically setup.
+        path = tempfile.mkdtemp()
+        graph = PersistentGraph(path, auto_create=True)
+
+        marko = graph.get_or_create_vertex("person", name="Marko")
+        spot = graph.get_or_create_vertex("dog", name="Spot")
+        graph.get_or_create_edge(marko, "owns", spot)
+
+
+        # Just check a couple things, because we will assume that if
+        # we have some data in the right place, all the reset should be
+        # there too.
+
+        self.assertEqual(
+            sorted(os.listdir(graph.vertices_path)),
+            sorted(["constraints.json", "person", "dog"]),
+        )
+
+        self.assertEqual(
+            sorted(os.listdir(marko.path)),
+            sorted(["in-edges", "out-edges", "properties.json"]),
+        )
+
+        self.assertEqual(
+            sorted(os.listdir(graph.edges_path)),
+            sorted(["owns"]),
+        )
+
+    def test_import_with_vertices_missing_properties_file(self):
+        path = create_graph_mock_path()
+        os.remove(
+            os.path.join(
+                path,
+                "vertices",
+                "person",
+                "0",
+                "properties.json"
+            )
+        )
+        graph = PersistentGraph(path)
+        vertex = graph.get_vertex(0)
+        self.assertDictEqual(vertex.properties, {})
+
+    def test_import_from_path_missing_vertices_directory(self):
+        path = tempfile.mkdtemp()
+        os.makedirs(os.path.join(path, "edges"))
+        self.assertRaises(
+            IOError,
+            PersistentGraph,
+            path
+        )
+
+    def test_import_from_path_missing_vertices_constraints(self):
+        path = tempfile.mkdtemp()
+        os.makedirs(os.path.join(path, "vertices"))
+        os.makedirs(os.path.join(path, "edges"))
+        self.assertRaises(
+            IOError,
+            PersistentGraph,
+            path
+        )
+
+    def test_import_from_path_missing_edges_directory(self):
+        path = tempfile.mkdtemp()
+        os.makedirs(os.path.join(path, "vertices"))
+        fh = open(os.path.join(path, "vertices", "constraints.json"), "w")
+        fh.write("{}")
+        fh.close()
+        self.assertRaises(
+            OSError,
+            PersistentGraph,
+            path
+        )
+
+    def test_import_from_path_loaded_edges(self):
+        path = create_graph_mock_path()
+        graph = PersistentGraph(path)
+
+        self.assertEqual(len(graph.edges), 1)
+        marko_josh = graph.get_edge(0)
+
+        self.assertIsInstance(marko_josh, PersistentEdge)
+
+        self.assertEqual(
+            marko_josh.path,
+            os.path.join(graph.edges_path, "knows", "0"),
+        )
+
+        self.assertDictEqual(
+            marko_josh.as_dict(),
+            {
+                "id": 0,
+                "label": "knows",
+                "metadata": {},
+                "head_id": 0,
+                "tail_id": 1,
+                "properties": {
+                    "since": "school",
+                },
+            }
+        )
+
+    def test_import_from_path_edges_with_bogus_extra_dir(self):
+        path = create_graph_mock_path()
+        os.mkdir(os.path.join(path, "edges", "knows", "bogus_dir"))
+        graph = PersistentGraph(path)
+        # should still have loaded the edge
+        self.assertEqual(len(graph.edges), 1)
+
+    def test_import_from_path_vertices_with_bogus_extra_dir(self):
+        path = create_graph_mock_path()
+        os.mkdir(os.path.join(path, "vertices", "person", "bogus_dir"))
+        graph = PersistentGraph(path)
+        # should still have loaded the edge
+        self.assertEqual(len(graph.vertices), 2)
+
+    def test_import_from_path_loaded_edges_missing_properties_file(self):
+        path = create_graph_mock_path()
+
+        # deleted the edges properties file.
+        os.remove(
+            os.path.join(
+                path,
+                "edges",
+                "knows",
+                "0",
+                "properties.json"
+            )
+        )
+
+        graph = PersistentGraph(path)
+
+        marko = graph.get_vertex(0)
+        josh = graph.get_vertex(1)
+        marko_josh = graph.get_edge(0)
+
+        self.assertEqual(len(graph.edges), 1)
+        self.assertEqual(marko_josh.head, marko)
+        self.assertEqual(marko_josh.tail, josh)
+        self.assertIsInstance(marko_josh, PersistentEdge)
+        self.assertEqual(
+            marko_josh.path,
+            os.path.join(graph.edges_path, "knows", "0"),
+        )
+        self.assertDictEqual(marko_josh.properties, {})
+
+    def test_import_from_path_loaded_edges_unknown_vertex(self):
+        path = create_graph_mock_path()
+        old = os.path.join(
+            path,
+            "edges",
+            "knows",
+            "0",
+            "head",
+            "0"
+        )
+        new = os.path.join(
+            path,
+            "edges",
+            "knows",
+            "0",
+            "head",
+            "5"
+        )
+        os.rename(old, new)
+
+        self.assertRaises(
+            KeyError,
+            PersistentGraph,
+            path
+        )
+
+    def test_import_from_path_loaded_edges_head_vertex_not_a_int(self):
+        path = create_graph_mock_path()
+        old = os.path.join(
+            path,
+            "edges",
+            "knows",
+            "0",
+            "head",
+            "0"
+        )
+        new = os.path.join(
+            path,
+            "edges",
+            "knows",
+            "0",
+            "head",
+            "non-int"
+        )
+        os.rename(old, new)
+
+        graph = PersistentGraph(path)
+        self.assertEqual(len(graph.edges), 0)
+
+    def test_import_from_path_loaded_edges_tail_vertex_not_a_int(self):
+        path = create_graph_mock_path()
+        old = os.path.join(
+            path,
+            "edges",
+            "knows",
+            "0",
+            "tail",
+            "1"
+        )
+        new = os.path.join(
+            path,
+            "edges",
+            "knows",
+            "0",
+            "tail",
+            "non-int"
+        )
+        os.rename(old, new)
+
+        graph = PersistentGraph(path)
+        self.assertEqual(len(graph.edges), 0)
+
+    def test_import_from_path_loaded_vertices(self):
+        path = create_graph_mock_path()
+        graph = PersistentGraph(path)
+
+        self.assertEqual(len(graph.vertices), 2)
+
+        # test marko was imported and has id 0
+        marko = graph.get_vertex(0)
+        self.assertIsInstance(marko, PersistentVertex)
+        self.assertEqual(
+            marko.path,
+            os.path.join(graph.vertices_path, "person", "0")
+        )
+        self.assertDictEqual(
+            marko.properties,
+            {
+                "name": "Marko"
+            }
+        )
+
+        # test josh was imported and has id 1
+        josh = graph.get_vertex(1)
+        self.assertIsInstance(josh, PersistentVertex)
+        self.assertEqual(
+            josh.path,
+            os.path.join(graph.vertices_path, "person", "1")
+        )
+        self.assertDictEqual(
+            josh.properties,
+            {
+                "name": "Josh"
+            }
+        )
+
+        # check that the next vertex has an id of 3
+        spot = graph.add_vertex("dog", name="Spot")
+        self.assertEqual(spot.ident, 2)
+
+    def test_create_persistent_graph_with_no_path(self):
+        self.assertEqual(
+            sorted(os.listdir(self.graph.path)),
+            sorted(["edges", "vertices"]),
+        )
+
+        # check for the constraints files
+        self.assertEqual(
+            sorted(os.listdir(self.graph.vertices_path)),
+            sorted(["constraints.json"]),
+        )
+
+    def test_add_vertex(self):
+        marko = self.graph.add_vertex("person", name="Marko")
+        josh = self.graph.add_vertex("person", name="Josh")
+        spot = self.graph.add_vertex("dog", name="Spot")
+
+        # Check for the label folder
+        self.assertEqual(
+            sorted(os.listdir(self.graph.vertices_path)),
+            sorted(["constraints.json", "dog", "person"]),
+        )
+
+        # Check in the label folder for vertex ident folders
+        self.assertEqual(
+            sorted(
+                os.listdir(
+                    os.path.join(self.graph.vertices_path, "person")
+                )
+            ),
+            sorted([str(marko.ident), str(josh.ident)]),
+        )
+
+        self.assertEqual(
+            sorted(
+                os.listdir(
+                    os.path.join(self.graph.vertices_path, "dog")
+                )
+            ),
+            sorted([str(spot.ident)]),
+        )
+
+        # check in the verext folder for the property file and the
+        # in/out edges folders - checking only one vertex should be enough.
+        self.assertEqual(
+            sorted(os.listdir(marko.path)),
+            sorted(["properties.json", "in-edges", "out-edges"]),
+        )
+
+        # check that the properties file was populated
+        self.assertDictEqual(
+            json.load(open(os.path.join(str(marko.path), "properties.json"))),
+            {"name": "Marko"},
+        )
+
+    def test_add_edge(self):
+        marko = self.graph.add_vertex("person", name="Marko")
+        josh = self.graph.add_vertex("person", name="Josh")
+        edge = self.graph.add_edge(marko, "knows", josh, since="school")
+
+        # Check for the label folder
+        self.assertEqual(
+            sorted(os.listdir(self.graph.edges_path)),
+            ["knows"],
+        )
+
+        # Check in the label folder for edge ident folders
+        self.assertEqual(
+            sorted(
+                os.listdir(
+                    os.path.join(self.graph.edges_path, "knows")
+                )
+            ),
+            sorted([str(edge.ident)]),
+        )
+
+        # check in the edge folder has a properties file, and a head and tail
+        # directory
+        self.assertEqual(
+            sorted(
+                os.listdir(
+                    os.path.join(
+                        self.graph.edges_path, "knows", str(edge.ident)
+                    )
+                )
+            ),
+            sorted(
+                [
+                    "properties.json",
+                    "head",
+                    "tail"
+                ]
+            ),
+        )
+
+        # check that the vertices in the edge folder are symlinks
+        mark_link = os.path.join(
+            self.graph.edges_path,
+            "knows",
+            str(edge.ident),
+            "head",
+            str(marko.ident),
+        )
+
+        josh_link = os.path.join(
+            self.graph.edges_path,
+            "knows",
+            str(edge.ident),
+            "tail",
+            str(josh.ident),
+        )
+
+        self.assertEqual(os.path.exists(mark_link), True)
+        self.assertEqual(os.path.exists(josh_link), True)
+        self.assertEqual(os.path.islink(mark_link), True)
+        self.assertEqual(os.path.islink(josh_link), True)
+
+        # check that the properties file was populated
+        self.assertEqual(
+            json.load(
+                open(
+                    os.path.join(
+                        self.graph.edges_path,
+                        "knows",
+                        str(edge.ident),
+                        "properties.json"
+                    )
+                )
+            ),
+            {"since": "school"},
+        )
+
+        # check that the edge in the vertex in and out edge folders are
+        # symlinked to the edge
+        mark_out_edge_link = os.path.join(
+            self.graph.vertices_path,
+            "person",
+            str(marko.ident),
+            "out-edges",
+            str(edge.ident),
+        )
+
+        josh_in_edge_link = os.path.join(
+            self.graph.vertices_path,
+            "person",
+            str(josh.ident),
+            "in-edges",
+            str(edge.ident),
+        )
+
+        self.assertEqual(os.path.islink(mark_out_edge_link), True)
+        self.assertEqual(os.path.islink(josh_in_edge_link), True)
+
+    def test_set_property(self):
+        marko = self.graph.add_vertex("person", name="Marko")
+        self.graph.set_property(marko, surname="Polo")
+
+        self.assertDictEqual(
+            json.load(
+                open(
+                    os.path.join(
+                        self.graph.vertices_path,
+                        "person",
+                        str(marko.ident),
+                        "properties.json"
+                    )
+                )
+            ),
+            {
+                "name": "Marko",
+                "surname": "Polo",
+            },
+        )
+
+    def test_remove_vertex(self):
+        marko = self.graph.add_vertex("person", name="Marko")
+        josh = self.graph.add_vertex("person", name="Josh")
+
+        self.graph.remove_vertex(marko)
+
+        self.assertEqual(
+            sorted(
+                os.listdir(
+                    os.path.join(self.graph.vertices_path, "person")
+                )
+            ),
+            sorted([str(josh.ident)]),
+        )
+
+    def test_remove_edge(self):
+        marko = self.graph.add_vertex("person", name="Marko")
+        josh = self.graph.add_vertex("person", name="Josh")
+        spot = self.graph.add_vertex("dog", name="Spot")
+
+        edge = self.graph.add_edge(marko, "knows", josh)
+        edge2 = self.graph.add_edge(marko, "knows", spot)
+
+        self.graph.remove_edge(edge)
+
+        self.assertEqual(
+            sorted(
+                os.listdir(
+                    os.path.join(self.graph.edges_path, "knows")
+                )
+            ),
+            sorted([str(edge2.ident)]),
+        )
+
+    def test_add_vertex_constraints(self):
+        self.graph.add_vertex_constraint("person", "name")
+        print self.graph.vertices_path
+        self.assertEqual(
+            json.load(
+                open(
+                    os.path.join(
+                        self.graph.vertices_path,
+                        "constraints.json"
+                    ),
+                )
+            ),
+            [
+                {
+                    "label": "person",
+                    "key": "name"
+                }
+            ],
         )
