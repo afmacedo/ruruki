@@ -79,6 +79,14 @@ class TestEntitySet(base.TestBase):
             sorted([self.josh, self.peter])
         )
 
+    def test_remove_with_unindexed_property(self):
+        self.marko.properties["unindexed"] = "say what"
+        self.container.remove(self.marko)
+        self.assertEqual(
+            self.container.sorted(),
+            sorted([self.josh, self.peter])
+        )
+
     def test_remove_unknown_entity_id(self):
         sue = Vertex(100, name="sue")
         self.assertRaises(
@@ -554,7 +562,7 @@ class TestEndsWithFiltering(FilteringBase):
                 surname__iendswith="s",
                 age=30,
             ).sorted(),
-            [self.marko, self.john],
+            sorted([self.marko, self.john]),
         )
 
     def test_incase_filter_with_label_not_all_props_match(self):
