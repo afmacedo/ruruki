@@ -6,7 +6,6 @@ import json
 import logging
 import os
 import shutil
-from tempfile import mkdtemp
 from ruruki import interfaces
 from ruruki.entities import Vertex, Edge, PersistentVertex, PersistentEdge
 from ruruki.entities import EntitySet
@@ -417,6 +416,10 @@ class PersistentGraph(Graph):
 
     See :class:`~.IGraph` for doco.
 
+    .. note::
+
+        Verices and Edges ID's are retained when the path is loaded.
+
     .. code::
 
         path
@@ -448,34 +451,28 @@ class PersistentGraph(Graph):
                          |_ tail
                              |_ 1 -> ../../../vertices/1 (symlink)
 
-    :param path: Path to ruruki graph data on disk. If :obj:`None`, then
-        a temporary path will be created, else passing in a path to an
-        empty directory will result in the creation of the graph data
-        in the provided path.
+    :param path: Path to ruruki graph data on disk.
     :param auto_create: If True, then missing ``vertices`` or ``edges``
         directories will be created.
     :type auto_create: :class:`bool`
     :type path: :class:`str`
     """
-    def __init__(self, path=None, auto_create=False):
+    def __init__(self, path, auto_create=True):
         super(PersistentGraph, self).__init__()
         self._vclass = PersistentVertex
         self._eclass = PersistentEdge
+
         self.path = path
+        self.vertices_path = os.path.join(self.path, "vertices")
+        self.edges_path = os.path.join(self.path, "edges")
+        self.vertices_constraints_path = os.path.join(
+            self.vertices_path, "constraints.json"
+        )
 
-        if path is not None:
-            self.vertices_path = os.path.join(self.path, "vertices")
-            self.edges_path = os.path.join(self.path, "edges")
-            self.vertices_constraints_path = os.path.join(
-                self.vertices_path, "constraints.json"
-            )
+        if auto_create is True:
+            self._auto_create()
 
-            if auto_create is True:
-                self._auto_create()
-
-            self._load_from_path()
-        else:
-            self._create_path()
+        self._load_from_path()
 
     def _auto_create(self):
         """
@@ -622,15 +619,6 @@ class PersistentGraph(Graph):
         """
         self.edges_path = os.path.join(path, "edges")
         os.makedirs(self.edges_path)
-
-    def _create_path(self):
-        """
-        Create a complete database skeleton path.
-        """
-        self.path = mkdtemp(suffix="-ruruki-db")
-        logging.info("Created temporary graph db path %r", self.path)
-        self._create_vertex_skel(self.path)
-        self._create_edge_skel(self.path)
 
     def add_vertex_constraint(self, label, key):
         super(PersistentGraph, self).add_vertex_constraint(label, key)
