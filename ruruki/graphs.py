@@ -416,6 +416,10 @@ class PersistentGraph(Graph):
 
     See :class:`~.IGraph` for doco.
 
+    .. note::
+
+        Verices and Edges ID's are retained when the path is loaded.
+
     .. code::
 
         path

@@ -95,6 +95,11 @@ class IGraph(object):
         Load and import data into the database. Data should be in a JSON
         format.
 
+        .. note::
+
+            Id's are not retained and are regenerated. This allows you to
+            load multiple dumps into the same graph.
+
         :param file_handler: A file-like object that, when read,
             produces JSON data describing a graph.
             The JSON data should be compatible with that produced by
