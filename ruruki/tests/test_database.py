@@ -847,7 +847,8 @@ def create_graph_mock_path():
 
 class TestPersistentGraph(unittest2.TestCase):
     def setUp(self):
-        self.graph = PersistentGraph()
+        path = tempfile.mkdtemp()
+        self.graph = PersistentGraph(path)
 
     def test_import_from_path(self):
         path = create_graph_mock_path()
@@ -974,7 +975,8 @@ class TestPersistentGraph(unittest2.TestCase):
         self.assertRaises(
             IOError,
             PersistentGraph,
-            path
+            path,
+            auto_create=False,
         )
 
     def test_import_from_path_missing_vertices_constraints(self):
