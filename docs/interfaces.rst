@@ -42,3 +42,12 @@ Entity Set
    :members:
    :inherited-members:
    :undoc-members:
+
+
+Locks
+=====
+
+.. autoclass:: ruruki.interfaces.ILock
+   :members:
+   :inherited-members:
+   :undoc-members:
