@@ -419,9 +419,9 @@ class PersistentGraph(Graph):
     .. note::
 
         Verices and Edges ID's are retained when the path is loaded.
-        
+
     .. warn::
-    
+
         Use this persistent graph if performance is not important.
         There is a performance hit due to the extra disk I/O overhead
         when doing many writing/updating operations.
