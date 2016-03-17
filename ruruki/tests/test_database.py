@@ -1417,3 +1417,10 @@ class TestPersistentGraph(unittest2.TestCase):
             PersistentGraph,
             path
         )
+
+    def test_close(self):
+        self.graph.close()
+        self.assertEqual(
+            self.graph._lock.locked,
+            False
+        )

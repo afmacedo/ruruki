@@ -726,3 +726,6 @@ class PersistentGraph(Graph):
     def remove_vertex(self, vertex):
         super(PersistentGraph, self).remove_vertex(vertex)
         shutil.rmtree(vertex.path)
+
+    def close(self):
+        self._lock.release()
