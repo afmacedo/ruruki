@@ -20,7 +20,7 @@ class Lock(interfaces.ILock):
     @property
     def locked(self):
         """
-        Return the stats of the lock.
+        Return the status of the lock.
 
         :returns: True if the lock is acquired.
         :rtype: :class:`bool`
@@ -108,7 +108,7 @@ class DirectoryLock(Lock):
     @property
     def locked(self):
         """
-        Return the stats of the lock.
+        Return the status of the lock.
 
         :returns: True if the lock is acquired.
         :rtype: :class:`bool`
