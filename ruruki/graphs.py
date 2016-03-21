@@ -7,6 +7,7 @@ import logging
 import os
 import shutil
 from ruruki import interfaces
+from ruruki.locks import DirectoryLock
 from ruruki.entities import Vertex, Edge, PersistentVertex, PersistentEdge
 from ruruki.entities import EntitySet
 
@@ -462,11 +463,26 @@ class PersistentGraph(Graph):
         directories will be created.
     :type auto_create: :class:`bool`
     :type path: :class:`str`
+    :raises DatabasePathLocked: If the path is already locked by another
+        persistence graph instance.
     """
     def __init__(self, path, auto_create=True):
         super(PersistentGraph, self).__init__()
         self._vclass = PersistentVertex
         self._eclass = PersistentEdge
+
+        self._lock = DirectoryLock(path)
+        try:
+            self._lock.acquire()
+        except interfaces.AcquireError:
+            logging.exception(
+                "Path %r is already owned by another graph.",
+                path
+            )
+            raise interfaces.DatabasePathLocked(
+                "Path {0!r} is already locked by anotherr persistent graph "
+                "instance.".format(path)
+            )
 
         self.path = path
         self.vertices_path = os.path.join(self.path, "vertices")
@@ -716,3 +732,6 @@ class PersistentGraph(Graph):
     def remove_vertex(self, vertex):
         super(PersistentGraph, self).remove_vertex(vertex)
         shutil.rmtree(vertex.path)
+
+    def close(self):
+        self._lock.release()

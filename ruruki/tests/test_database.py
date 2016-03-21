@@ -884,7 +884,7 @@ class TestPersistentGraph(unittest2.TestCase):
         # check the top level directories have been created.
         self.assertEqual(
             sorted(os.listdir(graph.path)),
-            sorted(["vertices", "edges"]),
+            sorted([".lock", "vertices", "edges"]),
         )
 
         # check the vertices directory and other files have been created.
@@ -1186,7 +1186,7 @@ class TestPersistentGraph(unittest2.TestCase):
     def test_create_persistent_graph_with_no_path(self):
         self.assertEqual(
             sorted(os.listdir(self.graph.path)),
-            sorted(["edges", "vertices"]),
+            sorted([".lock", "edges", "vertices"]),
         )
 
         # check for the constraints files
@@ -1393,7 +1393,6 @@ class TestPersistentGraph(unittest2.TestCase):
 
     def test_add_vertex_constraints(self):
         self.graph.add_vertex_constraint("person", "name")
-        print self.graph.vertices_path
         self.assertEqual(
             json.load(
                 open(
@@ -1409,4 +1408,19 @@ class TestPersistentGraph(unittest2.TestCase):
                     "key": "name"
                 }
             ],
+        )
+
+    def test_path_already_locked(self):
+        path = self.graph.path
+        self.assertRaises(
+            interfaces.DatabasePathLocked,
+            PersistentGraph,
+            path
+        )
+
+    def test_close(self):
+        self.graph.close()
+        self.assertEqual(
+            self.graph._lock.locked,
+            False
         )

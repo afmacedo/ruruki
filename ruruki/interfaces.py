@@ -20,6 +20,24 @@ class VertexTuple(namedtuple("VertexTuple", ["label", "properties"])):
 
 
 # Exceptions
+class LockException(Exception):
+    """
+    Base lock exception class.
+    """
+
+
+class AcquireError(LockException):
+    """
+    Raised if there was a problem acquiring a lock.
+    """
+
+
+class ReleaseError(LockException):
+    """
+    Raised if there was a problem releasing a lock.
+    """
+
+
 class EntityException(Exception):
     """
     Base container exception class.
@@ -47,6 +65,13 @@ class DumplicateConstraintError(EntitySetException):
 class DatabaseException(Exception):
     """
     Database Exception.
+    """
+
+
+class DatabasePathLocked(DatabaseException):
+    """
+    Raised the path used by a persistent graph is already locked/owned
+    by another persistent graph instance.
     """
 
 
@@ -762,3 +787,26 @@ class IEntitySet(MutableSet):
 
     def __repr__(self):  # pragma: no cover
         return self.__str__()
+
+
+class ILock(object):
+    """
+    Interface for locking.
+    """
+    ___metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def acquire(self):
+        """
+        Acquire a lock.
+
+        :raises AcquireError: If a lock failed to be acquired.
+        """
+
+    @abc.abstractmethod
+    def release(self):
+        """
+        Release the lock.
+
+        :raises ReleaseError: If the lock was unable to be released.
+        """

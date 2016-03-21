@@ -47,3 +47,19 @@ Entities
 .. autoclass:: ruruki.entities.PersistentEdge
    :members:
    :inherited-members:
+
+
+Locks
+=====
+
+.. autoclass:: ruruki.locks.Lock
+   :members:
+   :inherited-members:
+
+.. autoclass:: ruruki.locks.FileLock
+   :members:
+   :inherited-members:
+
+.. autoclass:: ruruki.locks.DirectoryLock
+   :members:
+   :inherited-members:
