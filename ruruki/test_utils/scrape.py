@@ -1,10 +1,13 @@
+#pylint: skip-file
+
 import logging
 import inspect
 import ruruki
-from ruruki_eye.server import run
+
+from ruruki.graphs import Graph
 
 
-GRAPH = ruruki.create_graph()
+GRAPH = Graph()
 GRAPH.add_vertex_constraint("class", "name")
 GRAPH.add_vertex_constraint("method", "name")
 GRAPH.add_vertex_constraint("file", "name")
@@ -54,11 +57,14 @@ def build_dep(lib, parent):
 
 
 def scrape():
-    p = GRAPH.get_or_create_vertex("package", name="ruruki")
-    build_dep(ruruki, p)
-    run("0.0.0.0", 8000, False, GRAPH)
+    build_dep(ruruki, GRAPH.get_or_create_vertex("package", name="ruruki"))
+    return GRAPH
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+
+    from ruruki_eye.server import run
+
     scrape()
+    run("0.0.0.0", 8000, False, GRAPH)
