@@ -18,8 +18,8 @@ Feature: RUQL finding paths
     Scenario: complex query
         Given we have a graph with vertices
             | label  | name       |
-            | Colo   | TKO        |
-            | Colo   | MAS        |
+            | Colo   | NSW        |
+            | Colo   | VIC        |
             | Host   | hostA      |
             | Host   | hostB      |
             | App    | app1       |
@@ -28,13 +28,13 @@ Feature: RUQL finding paths
             | App    | app4       |
         And edges between them
             | head   | label       | tail    |
-            | hostA  | belongs_to  | TKO     |
-            | hostB  | belongs_to  | MAS     |
+            | hostA  | belongs_to  | VIC     |
+            | hostB  | belongs_to  | NSW     |
             | app1   | runs_on     | hostA   |
             | app2   | runs_on     | hostA   |
             | app3   | runs_on     | hostB   |
             | app4   | runs_on     | hostB   |
             | app3   | connects_to | app1    |
-        When we query for applications that connect to TKO
-        And connects to an application that belongs to MAS
+        When we query for applications that connect to VIC
+        And connects to an application that belongs to NSW
         Then we will get a result set with vertex app3
