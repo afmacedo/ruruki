@@ -7,6 +7,7 @@
 [![PyPI](https://img.shields.io/pypi/dd/ruruki.svg)](https://pypi.python.org/pypi/ruruki)
 [![PyPI](https://img.shields.io/pypi/dw/ruruki.svg)](https://pypi.python.org/pypi/ruruki)
 [![PyPI](https://img.shields.io/pypi/dm/ruruki.svg)](https://pypi.python.org/pypi/ruruki)
+[![Join the chat at https://gitter.im/optiver/ruruki](https://badges.gitter.im/optiver/ruruki.svg)](https://gitter.im/optiver/ruruki?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Introduction
 ============
