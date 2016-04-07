@@ -2,12 +2,12 @@ language: python
 python:
   - "2.7"
 install:
-    # - pip install coveralls
+  - pip install coveralls
   - pip install tox-travis
 script:
   - mkdir docs/_static
   - tox
-# after_success: coveralls
+after_success: coveralls
 addons:
     code_climate:
         repo_token: 7d980e6d410263f70fb969ade0a0a5086a208d2f2212d493af18b91bb451aafa
